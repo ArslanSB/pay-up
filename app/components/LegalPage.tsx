@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { AccountMenu } from "./AccountMenu";
 
 export interface LegalData {
   operatorName: string;
@@ -20,7 +21,10 @@ export function Section({ title, children }: { title: string; children: ReactNod
 export function LegalPage({ title, data, children }: { title: string; data: LegalData; children: ReactNode }) {
   return (
     <main className="flex flex-col gap-6 leading-relaxed">
-      <nav className="flex justify-between font-semibold"><Link to="/" className="link">‹ Pay Up</Link></nav>
+      <nav className="flex items-center justify-between font-semibold">
+        <Link to="/" className="link">‹ Pay Up</Link>
+        <AccountMenu />
+      </nav>
       <div>
         <h1 className="display text-[46px]">{title}</h1>
         <p className="mt-2 text-sm font-semibold">Updated {data.updated}</p>

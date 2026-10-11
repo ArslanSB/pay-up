@@ -1,5 +1,6 @@
 import { data, Link, redirect } from "react-router";
 import type { Route } from "./+types/jars.new";
+import { AccountMenu } from "../components/AccountMenu";
 import { JarForm } from "../components/JarForm";
 import { getDb } from "../lib/db.server";
 import { env } from "../lib/env.server";
@@ -37,7 +38,10 @@ export default function NewJar({ loaderData, actionData }: Route.ComponentProps)
   const values = actionData?.values ?? EMPTY;
   return (
     <main className="flex flex-col gap-6">
-      <nav className="flex justify-between font-semibold"><Link to="/jars" className="link">‹ Jars</Link></nav>
+      <nav className="flex items-center justify-between font-semibold">
+        <Link to="/jars" className="link">‹ Jars</Link>
+        <AccountMenu />
+      </nav>
       <h1 className="display text-[46px]">New jar</h1>
       <JarForm key={JSON.stringify(values)} values={values} errors={actionData?.errors} submitLabel="Make the jar" slugPrefix={loaderData.slugPrefix} />
     </main>

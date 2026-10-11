@@ -3,7 +3,7 @@ import type { Route } from "./+types/privacy";
 import { LegalPage, Section } from "../components/LegalPage";
 import { env } from "../lib/env.server";
 
-const UPDATED = "2026-10-09";
+const UPDATED = "2026-10-11";
 
 export function meta() {
   return [{ title: "Privacy Policy" }];
@@ -52,10 +52,10 @@ export default function Privacy({ loaderData }: Route.ComponentProps) {
         <p>If you make a jar public, anyone with its link can see the title, description, balance, fine times and notes. Search engines can index it if someone links to it. Private jars are visible only to you while signed in. Think before putting other people's names in notes on a public jar.</p>
       </Section>
       <Section title="6. How long we keep it">
-        <p>Until you delete the jar or your account. Deleting your account from the dashboard erases the account, its jars, fines and settlements immediately. Server backups, where the hosting provider keeps them, can hold a copy for up to 30 days afterwards.</p>
+        <p>Until you delete the jar or your account. Deleting your account from your profile page erases the account, its jars, fines and settlements immediately. Server backups, where the hosting provider keeps them, can hold a copy for up to 30 days afterwards.</p>
       </Section>
       <Section title="7. Your rights">
-        <p>You can ask to see, correct, export or erase your data, to restrict or object to how it is used, and you can delete your account yourself from the dashboard. Email the contact address for the rest. You can also complain to the Spanish data protection authority (AEPD) or to the authority in your own country.</p>
+        <p>You can ask to see, correct, export or erase your data, to restrict or object to how it is used, and you can delete your account yourself from your profile page. Email the contact address for the rest. You can also complain to the Spanish data protection authority (AEPD) or to the authority in your own country.</p>
       </Section>
       <Section title="8. Where it lives, and security">
         <p>Your data is stored on the server the operator runs this site from; ask if you need to know where it is hosted. The site uses HTTPS and signed cookies, and only the operator can reach the database. No system is perfectly secure.</p>

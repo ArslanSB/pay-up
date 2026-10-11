@@ -11,7 +11,8 @@ export default [
   route("auth/:provider/callback", "routes/auth.$provider.callback.tsx"),
   route("logout", "routes/logout.tsx"),
   route("api/slug", "routes/api.slug.ts"),
-  route("account", "routes/account.tsx"),
+  route("profile", "routes/profile.tsx"),
+  route("avatar", "routes/avatar.ts"),
   route("terms", "routes/terms.tsx"),
   route("privacy", "routes/privacy.tsx"),
 ] satisfies RouteConfig;

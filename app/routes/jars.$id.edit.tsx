@@ -1,5 +1,6 @@
 import { data, Link, redirect } from "react-router";
 import type { Route } from "./+types/jars.$id.edit";
+import { AccountMenu } from "../components/AccountMenu";
 import { ConfirmButton } from "../components/ConfirmButton";
 import { JarForm } from "../components/JarForm";
 import { getDb } from "../lib/db.server";
@@ -46,7 +47,10 @@ export default function EditJar({ loaderData, actionData }: Route.ComponentProps
   const values = actionData?.values ?? loaderData.values;
   return (
     <main className="flex flex-col gap-6">
-      <nav className="flex justify-between font-semibold"><Link to={`/jars/${loaderData.jar.id}`} className="link">‹ {loaderData.jar.title}</Link></nav>
+      <nav className="flex items-center justify-between gap-4 font-semibold">
+        <Link to={`/jars/${loaderData.jar.id}`} className="link min-w-0 truncate">‹ {loaderData.jar.title}</Link>
+        <AccountMenu />
+      </nav>
       <h1 className="display text-[46px]">Edit jar</h1>
       <JarForm key={JSON.stringify(values)} values={values} errors={actionData?.errors} submitLabel="Save changes" slugPrefix={loaderData.slugPrefix} jarId={loaderData.jar.id} />
       <section className="mt-6 flex flex-col gap-3">

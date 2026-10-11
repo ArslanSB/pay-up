@@ -17,7 +17,6 @@ describe("dashboard loader", () => {
     addFine(getDb(), jar.id, null);
     createJar(getDb(), other.id, { title: "Not mine", description: "", fineAmount: 100, currency: "EUR", visibility: "public", publicSlug: null });
     const data = await loader(callArgs(getRequest("http://localhost:3000/jars", await sessionCookieFor(me.id), { "Accept-Language": "en-US" })));
-    expect(data.name).toBe("Arslan");
     expect(data.jars).toEqual([{ id: jar.id, title: "Negativity jar", countLabel: "1 fine", balanceLabel: "€1.00" }]);
     expect(nbsp(data.subtitle)).toBe("€1.00 owed. Ouch.");
   });

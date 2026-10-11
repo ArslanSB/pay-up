@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayKey, dayLabel, formatDate, formatTime, groupByDay } from "./dates";
+import { dayKey, dayLabel, daysBetweenKeys, formatDate, formatTime, groupByDay, shiftKey, weekdayIndex, weekStartKey } from "./dates";
 
 const now = new Date("2026-10-08T10:00:00Z");
 
@@ -51,5 +51,25 @@ describe("groupByDay", () => {
   });
   it("returns an empty array for no items", () => {
     expect(groupByDay([], now, "UTC", "en-GB")).toEqual([]);
+  });
+});
+
+describe("day keys", () => {
+  it("shiftKey crosses month and year ends", () => {
+    expect(shiftKey("2026-10-31", 1)).toBe("2026-11-01");
+    expect(shiftKey("2027-01-01", -1)).toBe("2026-12-31");
+  });
+  it("weekdayIndex counts from Monday", () => {
+    expect(weekdayIndex("2026-10-05")).toBe(0);
+    expect(weekdayIndex("2026-10-11")).toBe(6);
+  });
+  it("weekStartKey is the Monday of that week", () => {
+    expect(weekStartKey("2026-10-11")).toBe("2026-10-05");
+    expect(weekStartKey("2026-10-05")).toBe("2026-10-05");
+    expect(weekStartKey("2026-01-01")).toBe("2025-12-29");
+  });
+  it("daysBetweenKeys ignores daylight saving changes", () => {
+    expect(daysBetweenKeys("2026-10-20", "2026-10-30")).toBe(10);
+    expect(daysBetweenKeys("2026-10-08", "2026-10-07")).toBe(-1);
   });
 });

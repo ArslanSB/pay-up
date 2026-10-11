@@ -5,6 +5,16 @@ export function fineCountLabel(count: number): string {
   return count === 1 ? "1 fine" : `${count} fines`;
 }
 
+export function jarCountLabel(count: number): string {
+  return count === 1 ? "1 jar" : `${count} jars`;
+}
+
+export function lastFineLabel(daysSince: number): string {
+  if (daysSince === 0) return "Your last fine was today.";
+  if (daysSince === 1) return "Your last fine was yesterday.";
+  return `${daysSince} days since your last fine.`;
+}
+
 export function dashboardSubtitle(jars: JarSummary[], locale: string): string {
   if (jars.length === 0) return "No jars yet. Make one for the thing you keep doing.";
   const currencies = new Set(jars.map((j) => j.currency));

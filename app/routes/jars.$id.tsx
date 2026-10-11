@@ -1,5 +1,6 @@
 import { data, Form, Link } from "react-router";
 import type { Route } from "./+types/jars.$id";
+import { AccountMenu } from "../components/AccountMenu";
 import { HistoryList } from "../components/HistoryList";
 import { PayButton } from "../components/PayButton";
 import { ShareLink } from "../components/ShareLink";
@@ -61,9 +62,12 @@ export default function OwnerJar({ loaderData, actionData }: Route.ComponentProp
   const error = actionData && !actionData.ok ? actionData.error : null;
   return (
     <main className="flex flex-col gap-5">
-      <nav className="flex justify-between font-semibold">
+      <nav className="flex items-center justify-between font-semibold">
         <Link to="/jars" className="link">‹ Jars</Link>
-        {view.jar.visibility === "public" ? <ShareLink url={publicUrl} /> : <span className="text-sm">Private</span>}
+        <div className="flex items-center gap-5">
+          {view.jar.visibility === "public" ? <ShareLink url={publicUrl} /> : <span className="text-sm">Private</span>}
+          <AccountMenu />
+        </div>
       </nav>
       <h1 className="display text-[46px]">{view.jar.title}</h1>
       {view.jar.description && <p className="panel tilt inline-block self-start px-3 py-2 font-semibold">{view.jar.description}</p>}

@@ -8,9 +8,28 @@ export function dayKey(date: Date, timeZone: string): string {
   }).format(date);
 }
 
-function shiftKey(key: string, days: number): string {
+function keyToUtc(key: string): number {
   const [y, m, d] = key.split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+  return Date.UTC(y, m - 1, d);
+}
+
+export function shiftKey(key: string, days: number): string {
+  return new Date(keyToUtc(key) + days * 86_400_000).toISOString().slice(0, 10);
+}
+
+/** 0 for Monday through 6 for Sunday. */
+export function weekdayIndex(key: string): number {
+  return (new Date(keyToUtc(key)).getUTCDay() + 6) % 7;
+}
+
+/** The Monday that starts the week holding `key`. */
+export function weekStartKey(key: string): string {
+  return shiftKey(key, -weekdayIndex(key));
+}
+
+/** Whole days from `from` to `to`; negative when `to` comes first. */
+export function daysBetweenKeys(from: string, to: string): number {
+  return Math.round((keyToUtc(to) - keyToUtc(from)) / 86_400_000);
 }
 
 export function dayLabel(iso: string, now: Date, timeZone: string, locale: string): string {

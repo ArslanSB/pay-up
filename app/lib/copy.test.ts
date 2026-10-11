@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dashboardSubtitle, fineCountLabel } from "./copy";
+import { dashboardSubtitle, fineCountLabel, jarCountLabel, lastFineLabel } from "./copy";
 
 const nbsp = (s: string) => s.replace(/ /g, " ");
 const jar = (over: Partial<{ currency: string; unsettledTotal: number; unsettledCount: number }>) =>
@@ -10,6 +10,21 @@ describe("fineCountLabel", () => {
     expect(fineCountLabel(1)).toBe("1 fine");
     expect(fineCountLabel(0)).toBe("0 fines");
     expect(fineCountLabel(13)).toBe("13 fines");
+  });
+});
+
+describe("jarCountLabel", () => {
+  it("handles singular and plural", () => {
+    expect(jarCountLabel(1)).toBe("1 jar");
+    expect(jarCountLabel(3)).toBe("3 jars");
+  });
+});
+
+describe("lastFineLabel", () => {
+  it("says today and yesterday, then counts the days", () => {
+    expect(lastFineLabel(0)).toBe("Your last fine was today.");
+    expect(lastFineLabel(1)).toBe("Your last fine was yesterday.");
+    expect(lastFineLabel(12)).toBe("12 days since your last fine.");
   });
 });
 

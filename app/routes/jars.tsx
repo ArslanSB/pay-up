@@ -1,6 +1,6 @@
-import { Form, Link } from "react-router";
+import { Link } from "react-router";
 import type { Route } from "./+types/jars";
-import { ConfirmButton } from "../components/ConfirmButton";
+import { AccountMenu } from "../components/AccountMenu";
 import { Tile } from "../components/Tile";
 import { dashboardSubtitle, fineCountLabel } from "../lib/copy";
 import { getDb } from "../lib/db.server";
@@ -20,7 +20,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   const locale = getLocale(request, env().appLocale);
   const jars = listJarsForOwner(db, user.id);
   return {
-    name: user.name,
     subtitle: dashboardSubtitle(jars, locale),
     jars: jars.map((j) => ({
       id: j.id,
@@ -36,7 +35,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   return (
     <main className="flex flex-col gap-6">
       <nav className="flex justify-end">
-        <Form method="post" action="/logout"><button type="submit" className="link">Sign out</button></Form>
+        <AccountMenu />
       </nav>
       <div>
         <h1 className="display text-[56px]">Your<br />jars</h1>
@@ -48,11 +47,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <h3 className="display text-xl">+ New jar</h3>
         </Link>
       </div>
-      <section className="mt-10 flex flex-col gap-3">
-        <h2 className="text-xl font-extrabold">Account</h2>
-        <p className="text-sm">Signed in as {loaderData.name}. Deleting the account removes every jar, fine and settlement in it. There is no undo.</p>
-        <ConfirmButton action="/account" intent="delete" label="Delete my account" confirmLabel="Yes, delete everything" message="This erases your account and all of its jars. There is no undo." />
-      </section>
     </main>
   );
 }

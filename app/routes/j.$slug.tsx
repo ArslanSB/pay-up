@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/j.$slug";
+import { AccountMenu } from "../components/AccountMenu";
 import { HistoryList } from "../components/HistoryList";
 import { getDb } from "../lib/db.server";
 import { env } from "../lib/env.server";
@@ -34,9 +35,12 @@ export default function PublicJar({ loaderData }: Route.ComponentProps) {
   const { view, isOwner } = loaderData;
   return (
     <main className="flex flex-col gap-5">
-      <nav className="flex justify-between font-semibold">
+      <nav className="flex items-center justify-between font-semibold">
         <span className="text-sm">Pay Up</span>
-        {isOwner && <Link to={`/jars/${view.jar.id}`} className="link">Manage</Link>}
+        <div className="flex items-center gap-5">
+          {isOwner && <Link to={`/jars/${view.jar.id}`} className="link">Manage</Link>}
+          <AccountMenu />
+        </div>
       </nav>
       <h1 className="display text-[46px]">{view.jar.title}</h1>
       {view.jar.description && <p className="panel tilt inline-block self-start px-3 py-2 font-semibold">{view.jar.description}</p>}

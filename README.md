@@ -44,7 +44,7 @@ The SQLite file lives in `./data` on the host. Back it up by copying that folder
 | `TRUST_PROXY` | behind a reverse proxy | `loopback, linklocal, uniquelocal`: trusts X-Forwarded-* from private-network proxies such as a Docker network or a proxy on the same host. Set to `true` to trust any, or an Express trust-proxy value. The server also treats every request as addressed to `APP_URL`, so form posts work behind any proxy as long as `APP_URL` is the public origin. |
 | `PORT` | no | `3000` |
 
-Legal pages live at `/terms` and `/privacy` (plain-language drafts, not legal advice; set `OPERATOR_NAME` and `CONTACT_EMAIL`). There is no cookie banner because the only cookies are the session, the ten-minute sign-in cookie and the timezone cookie. Users can delete their account from the dashboard.
+Legal pages live at `/terms` and `/privacy` (plain-language drafts, not legal advice; set `OPERATOR_NAME` and `CONTACT_EMAIL`). There is no cookie banner because the only cookies are the session, the ten-minute sign-in cookie and the timezone cookie. Users can delete their account from their profile page (`/profile`, behind the avatar in the top-right corner), which also shows their stats.
 
 Public links are `/j/<slug>`: the slug is made from the title (or typed by you), checked live for availability, and changing it on the edit page stops the old link working.
 

@@ -3,7 +3,7 @@ import type { Route } from "./+types/terms";
 import { LegalPage, Section } from "../components/LegalPage";
 import { env } from "../lib/env.server";
 
-const UPDATED = "2026-10-09";
+const UPDATED = "2026-10-11";
 
 export function meta() {
   return [{ title: "Terms of Service" }];
@@ -36,7 +36,7 @@ export default function Terms({ loaderData }: Route.ComponentProps) {
         <p>To the extent the law allows, we are not liable for losses that come from using or not being able to use the service, including any money you decide to pay yourself or anyone else. Your statutory consumer rights are not affected.</p>
       </Section>
       <Section title="7. Ending things">
-        <p>You can delete your account from the dashboard at any time, which erases everything in it. We may suspend or delete accounts that abuse the service, and may remove long-inactive accounts after trying to give notice.</p>
+        <p>You can delete your account from your profile page at any time, which erases everything in it. We may suspend or delete accounts that abuse the service, and may remove long-inactive accounts after trying to give notice.</p>
       </Section>
       <Section title="8. Law and changes">
         <p>These terms are governed by Spanish law. If you are a consumer in the European Union, you can bring claims in the courts of the country where you live. We may update these terms; the date at the top tells you when, and using the service after a change means you accept it. Our <Link to="/privacy" className="link">Privacy Policy</Link> explains what we store.</p>

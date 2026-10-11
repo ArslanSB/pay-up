@@ -1,14 +1,27 @@
 import type { ReactNode } from "react";
 import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/root";
+import { avatarSrc } from "./lib/avatar.server";
+import { getDb } from "./lib/db.server";
 import { env } from "./lib/env.server";
+import { getUser } from "./lib/session.server";
 import "./app.css";
 
-/** Operator identity for the footer, so every page says who runs the site and how to reach them. */
-export function loader() {
+/**
+ * Operator identity for the footer, so every page says who runs the site and how to reach them,
+ * and the signed-in viewer for the account menu.
+ */
+export async function loader({ request }: Route.LoaderArgs) {
   const e = env();
-  return { operatorName: e.operatorName, contactEmail: e.contactEmail };
+  const user = await getUser(request, getDb());
+  return {
+    operatorName: e.operatorName,
+    contactEmail: e.contactEmail,
+    viewer: user ? { name: user.name, email: user.email, avatarSrc: avatarSrc(user.avatarUrl) } : null,
+  };
 }
+
+export type Viewer = NonNullable<Awaited<ReturnType<typeof loader>>["viewer"]>;
 
 const TZ_SCRIPT =
   'try{document.cookie="tz="+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+";path=/;max-age=31536000;samesite=lax"}catch(e){}';
