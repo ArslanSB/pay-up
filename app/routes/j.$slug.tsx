@@ -5,7 +5,7 @@ import { HistoryList } from "../components/HistoryList";
 import { getDb } from "../lib/db.server";
 import { env } from "../lib/env.server";
 import { notFound } from "../lib/http.server";
-import { buildJarView } from "../lib/jar-view.server";
+import { buildJarView, parseFineLimit } from "../lib/jar-view.server";
 import { getPublicJarBySlug } from "../lib/jars.server";
 import { getUser } from "../lib/session.server";
 import { getLocale, getTimeZone } from "../lib/viewer.server";
@@ -27,7 +27,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const db = getDb();
   const jar = getPublicJarBySlug(db, params.slug) ?? notFound();
   const user = await getUser(request, db);
-  const view = buildJarView(db, jar, { now: new Date(), timeZone: getTimeZone(request), locale: getLocale(request, env().appLocale) });
+  const view = buildJarView(db, jar, {
+    now: new Date(),
+    timeZone: getTimeZone(request),
+    locale: getLocale(request, env().appLocale),
+    fineLimit: parseFineLimit(request.url),
+  });
   return { view, isOwner: user?.id === jar.ownerId };
 }
 
@@ -48,7 +53,7 @@ export default function PublicJar({ loaderData }: Route.ComponentProps) {
         <span className="font-semibold">owes</span>
         <b className="display tnum text-[44px]">{view.balanceLabel}</b>
       </div>
-      <HistoryList groups={view.groups} settlements={view.settlements} canEdit={false} newestFineId={null} />
+      <HistoryList groups={view.groups} more={view.more} settlements={view.settlements} canEdit={false} newestFineId={null} />
     </main>
   );
 }

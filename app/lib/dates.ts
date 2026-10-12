@@ -62,6 +62,20 @@ export function formatDate(iso: string, now: Date, timeZone: string, locale: str
   }).format(date);
 }
 
+/** "3 Oct, 22:10", with the year when it differs from now's. */
+export function formatDayTime(iso: string, now: Date, timeZone: string, locale: string): string {
+  const date = new Date(iso);
+  const sameYear = dayKey(date, timeZone).slice(0, 4) === dayKey(now, timeZone).slice(0, 4);
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export function groupByDay<T extends { createdAt: string }>(
   items: T[],
   now: Date,

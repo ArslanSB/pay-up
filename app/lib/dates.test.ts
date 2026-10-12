@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayKey, dayLabel, daysBetweenKeys, formatDate, formatTime, groupByDay, shiftKey, weekdayIndex, weekStartKey } from "./dates";
+import { dayKey, dayLabel, daysBetweenKeys, formatDate, formatDayTime, formatTime, groupByDay, shiftKey, weekdayIndex, weekStartKey } from "./dates";
 
 const now = new Date("2026-10-08T10:00:00Z");
 
@@ -31,6 +31,10 @@ describe("formatters", () => {
   });
   it("formatDate prints day and month in the same year", () => {
     expect(formatDate("2026-10-01T12:00:00Z", now, "Europe/Madrid", "en-GB")).toBe("1 October");
+  });
+  it("formatDayTime prints a short day and the time, with the year only when it differs", () => {
+    expect(formatDayTime("2026-10-03T20:10:00Z", now, "Europe/Madrid", "en-GB")).toBe("3 Oct, 22:10");
+    expect(formatDayTime("2025-12-31T12:00:00Z", now, "Europe/Madrid", "en-GB")).toBe("31 Dec 2025, 13:00");
   });
   it("formatDate adds the year when it differs (final review, Important 2)", () => {
     expect(formatDate("2025-12-31T12:00:00Z", now, "Europe/Madrid", "en-GB")).toBe("31 December 2025");

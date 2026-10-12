@@ -12,11 +12,27 @@ export interface DayGroup {
   fines: FineRow[];
 }
 
+export interface PaidFineRow {
+  id: string;
+  whenLabel: string;
+  note: string | null;
+  amountLabel: string;
+}
+
 export interface SettlementRow {
   id: string;
   label: string;
   summary: string;
   totalLabel: string;
+  /** The fines this settle-up paid, newest first. */
+  fines: PaidFineRow[];
+}
+
+/** The next page of unsettled fines: `count` more of `hidden`, reached at `?fines=limit`. */
+export interface MoreFines {
+  count: number;
+  hidden: number;
+  limit: number;
 }
 
 export interface JarView {
@@ -31,7 +47,9 @@ export interface JarView {
   };
   balance: { total: number; count: number };
   balanceLabel: string;
+  /** The newest unsettled fines, up to the requested limit. */
   groups: DayGroup[];
+  more: MoreFines | null;
   settlements: SettlementRow[];
   newestFineId: string | null;
 }

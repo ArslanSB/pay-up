@@ -173,6 +173,19 @@ describe("fines and settlements", () => {
     expect(history.unsettled).toHaveLength(1);
     expect(history.settlements).toHaveLength(1);
     expect(history.settlements[0].fineCount).toBe(2);
+    expect(history.settlements[0].fines.map((f) => f.note)).toEqual(["sighed", null]);
+  });
+  it("getHistory keeps each settlement's fines with it", () => {
+    const jar = createJar(db, ownerId, input);
+    addFine(db, jar.id, "first");
+    const older = settle(db, jar.id, null)!;
+    addFine(db, jar.id, "second");
+    addFine(db, jar.id, "third");
+    const newer = settle(db, jar.id, null)!;
+    const { settlements } = getHistory(db, jar.id);
+    expect(settlements.map((s) => s.id)).toEqual([newer.id, older.id]);
+    expect(settlements[0].fines.map((f) => f.note)).toEqual(["third", "second"]);
+    expect(settlements[1].fines.map((f) => f.note)).toEqual(["first"]);
   });
 
   it("settle with nothing owed returns null and creates nothing (Review Focus 4)", () => {

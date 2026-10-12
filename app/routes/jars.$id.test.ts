@@ -28,6 +28,17 @@ describe("owner jar loader", () => {
     expect(data.view.jar.title).toBe("Negativity jar");
     expect(data.publicUrl).toBe(`http://localhost:3000/j/${jar.publicSlug}`);
   });
+  it("pages the unsettled fines with ?fines=", async () => {
+    const { jar, cookie, url } = await setup();
+    for (let i = 0; i < 15; i++) addFine(getDb(), jar.id, null);
+    const count = (d: Awaited<ReturnType<typeof loader>>) => d.view.groups.reduce((n, g) => n + g.fines.length, 0);
+    const first = await loader(callArgs(getRequest(url, cookie), { id: jar.id }));
+    expect(count(first)).toBe(10);
+    expect(first.view.more).toMatchObject({ count: 5, hidden: 5, limit: 20 });
+    const all = await loader(callArgs(getRequest(`${url}?fines=20`, cookie), { id: jar.id }));
+    expect(count(all)).toBe(15);
+    expect(all.view.more).toBeNull();
+  });
 });
 
 describe("owner jar action", () => {

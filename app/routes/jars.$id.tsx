@@ -7,7 +7,7 @@ import { ShareLink } from "../components/ShareLink";
 import { getDb } from "../lib/db.server";
 import { env } from "../lib/env.server";
 import { notFound } from "../lib/http.server";
-import { buildJarView } from "../lib/jar-view.server";
+import { buildJarView, parseFineLimit } from "../lib/jar-view.server";
 import { addFine, deleteFine, getJarForOwner, settle } from "../lib/jars.server";
 import { formatMoney } from "../lib/money";
 import { requireUser } from "../lib/session.server";
@@ -23,7 +23,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await requireUser(request, db);
   const jar = getJarForOwner(db, params.id, user.id) ?? notFound();
   const e = env();
-  const view = buildJarView(db, jar, { now: new Date(), timeZone: getTimeZone(request), locale: getLocale(request, e.appLocale) });
+  const view = buildJarView(db, jar, {
+    now: new Date(),
+    timeZone: getTimeZone(request),
+    locale: getLocale(request, e.appLocale),
+    fineLimit: parseFineLimit(request.url),
+  });
   return { view, publicUrl: `${e.appUrl}/j/${jar.publicSlug}` };
 }
 
@@ -76,7 +81,7 @@ export default function OwnerJar({ loaderData, actionData }: Route.ComponentProp
       {error && <p className="panel bg-pink px-3 py-2 font-semibold">{error}</p>}
       {message && <p className="panel bg-mint px-3 py-2 font-semibold">{message}</p>}
 
-      <HistoryList groups={view.groups} settlements={view.settlements} canEdit newestFineId={view.newestFineId} />
+      <HistoryList groups={view.groups} more={view.more} settlements={view.settlements} canEdit newestFineId={view.newestFineId} />
 
       <Form key={view.settlements.length} method="post" className="mt-4 flex flex-col gap-3">
         <input type="hidden" name="intent" value="settle" />

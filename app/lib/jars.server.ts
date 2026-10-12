@@ -213,7 +213,8 @@ export interface Balance {
 
 export interface History {
   unsettled: Fine[];
-  settlements: Settlement[];
+  /** Newest first, each with the fines it paid, newest first. */
+  settlements: Array<Settlement & { fines: Fine[] }>;
 }
 
 interface FineRow {
@@ -297,12 +298,21 @@ export function getHistory(db: Db, jarId: string): History {
     .prepare<[string], FineRow>("SELECT * FROM fines WHERE jar_id = ? AND settlement_id IS NULL ORDER BY created_at DESC, rowid DESC")
     .all(jarId)
     .map(rowToFine);
+  const paid = new Map<string, Fine[]>();
+  for (const fine of db
+    .prepare<[string], FineRow>("SELECT * FROM fines WHERE jar_id = ? AND settlement_id IS NOT NULL ORDER BY created_at DESC, rowid DESC")
+    .all(jarId)
+    .map(rowToFine)) {
+    const list = paid.get(fine.settlementId as string);
+    if (list) list.push(fine);
+    else paid.set(fine.settlementId as string, [fine]);
+  }
   const settlements = db
     .prepare<[string], SettlementRow>(
       `SELECT s.*, (SELECT COUNT(*) FROM fines t WHERE t.settlement_id = s.id) AS fine_count
        FROM settlements s WHERE s.jar_id = ? ORDER BY s.created_at DESC, s.rowid DESC`,
     )
     .all(jarId)
-    .map(rowToSettlement);
+    .map((row) => ({ ...rowToSettlement(row), fines: paid.get(row.id) ?? [] }));
   return { unsettled, settlements };
 }
