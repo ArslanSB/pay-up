@@ -18,6 +18,8 @@ export function Tile({ jar, index }: { jar: TileJar; index: number }) {
   return (
     <Link
       to={`/jars/${jar.id}`}
+      // Named so a change of sort slides each tile to its new place.
+      style={{ viewTransitionName: `jar-${jar.id}` }}
       className={`panel raised flex p-3.5 ${tileColor(index)} ${wide ? "col-span-2 min-h-[120px] flex-row items-end justify-between" : "min-h-[168px] flex-col justify-between"}`}
     >
       <h3 className="display text-2xl">{jar.title}</h3>

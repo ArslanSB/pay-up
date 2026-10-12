@@ -1,5 +1,6 @@
 import { nowIso, type Db } from "./db.server";
 import { newId, newSlugSuffix } from "./ids.server";
+import type { JarSort } from "./jar-sort";
 import { slugify, withSuffix } from "./slugs";
 
 export type Visibility = "private" | "public";
@@ -148,15 +149,25 @@ export function getPublicJarBySlug(db: Db, slug: string): Jar | null {
   return row ? rowToJar(row) : null;
 }
 
-export function listJarsForOwner(db: Db, ownerId: string): JarSummary[] {
+const NEWEST = "j.created_at DESC, j.rowid DESC";
+const ORDER_BY: Record<JarSort, string> = {
+  newest: NEWEST,
+  // Jars never fined go last, newest first among them.
+  recent: `last_fine_at DESC NULLS LAST, ${NEWEST}`,
+  // Raw minor units, so mixed currencies compare only roughly.
+  owed: `unsettled_total DESC, unsettled_count DESC, ${NEWEST}`,
+};
+
+export function listJarsForOwner(db: Db, ownerId: string, sort: JarSort = "newest"): JarSummary[] {
   const rows = db
     .prepare<[string], JarSummaryRow>(
       `SELECT j.*,
          COALESCE((SELECT SUM(t.amount) FROM fines t WHERE t.jar_id = j.id AND t.settlement_id IS NULL), 0) AS unsettled_total,
-         (SELECT COUNT(*) FROM fines t WHERE t.jar_id = j.id AND t.settlement_id IS NULL) AS unsettled_count
+         (SELECT COUNT(*) FROM fines t WHERE t.jar_id = j.id AND t.settlement_id IS NULL) AS unsettled_count,
+         (SELECT MAX(t.created_at) FROM fines t WHERE t.jar_id = j.id) AS last_fine_at
        FROM jars j
        WHERE j.owner_id = ?
-       ORDER BY j.created_at DESC, j.rowid DESC`,
+       ORDER BY ${ORDER_BY[sort]}`,
     )
     .all(ownerId);
   return rows.map((row) => ({ ...rowToJar(row), unsettledTotal: row.unsettled_total, unsettledCount: row.unsettled_count }));

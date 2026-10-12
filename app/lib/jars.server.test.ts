@@ -92,6 +92,30 @@ describe("lookups", () => {
     expect(list.map((j) => j.id)).toEqual([b.id, a.id]);
     expect(list[0]).toMatchObject({ unsettledTotal: 0, unsettledCount: 0 });
   });
+  it("listJarsForOwner sorts by last fine, never-fined jars last, settled fines included", () => {
+    const fineAt = (jarId: string, iso: string) => db.prepare("UPDATE fines SET created_at = ? WHERE id = ?").run(iso, addFine(db, jarId, null)?.id);
+    const old = createJar(db, ownerId, { ...input, title: "Old" });
+    const settled = createJar(db, ownerId, { ...input, title: "Settled" });
+    createJar(db, ownerId, { ...input, title: "Never" });
+    const quiet = createJar(db, ownerId, { ...input, title: "Quiet" });
+    fineAt(old.id, "2026-10-01T10:00:00Z");
+    fineAt(settled.id, "2026-10-09T10:00:00Z");
+    settle(db, settled.id, null);
+    fineAt(quiet.id, "2026-10-05T10:00:00Z");
+    expect(listJarsForOwner(db, ownerId, "recent").map((j) => j.title)).toEqual(["Settled", "Quiet", "Old", "Never"]);
+  });
+  it("listJarsForOwner sorts by most owed, then by fine count, then newest", () => {
+    const small = createJar(db, ownerId, { ...input, title: "Small" });
+    const big = createJar(db, ownerId, { ...input, title: "Big", fineAmount: 500 });
+    const many = createJar(db, ownerId, { ...input, title: "Many" });
+    createJar(db, ownerId, { ...input, title: "Empty" });
+    addFine(db, small.id, null);
+    addFine(db, big.id, null);
+    for (let i = 0; i < 5; i++) addFine(db, many.id, null);
+    expect(listJarsForOwner(db, ownerId, "owed").map((j) => j.title)).toEqual(["Many", "Big", "Small", "Empty"]);
+    settle(db, many.id, null);
+    expect(listJarsForOwner(db, ownerId, "owed").map((j) => j.title)).toEqual(["Big", "Small", "Empty", "Many"]);
+  });
 });
 
 describe("updateJar / deleteJar", () => {

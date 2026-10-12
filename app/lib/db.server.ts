@@ -48,6 +48,12 @@ export const MIGRATIONS: string[] = [
   );
   CREATE INDEX fines_jar ON fines(jar_id, created_at);
   `,
+  // Version 2 is reserved: the abandoned native-apps branch used it (devices, device_links and
+  // fines.client_id), and databases that ran it are already at 2. A no-op keeps both histories on track.
+  "",
+  `
+  ALTER TABLE users ADD COLUMN jar_sort TEXT NOT NULL DEFAULT 'newest' CHECK (jar_sort IN ('newest', 'recent', 'owed'));
+  `,
 ];
 
 export function migrate(db: Db): void {

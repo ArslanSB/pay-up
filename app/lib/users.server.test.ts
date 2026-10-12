@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { openDatabase, type Db } from "./db.server";
-import { deleteUser, findUserById, upsertUser } from "./users.server";
+import { deleteUser, findUserById, setJarSort, upsertUser } from "./users.server";
 
 let db: Db;
 beforeEach(() => {
@@ -31,6 +31,20 @@ describe("upsertUser", () => {
   });
   it("findUserById returns null for unknown ids", () => {
     expect(findUserById(db, "nope")).toBeNull();
+  });
+});
+
+describe("setJarSort", () => {
+  it("starts at newest and survives the next sign-in", () => {
+    const u = upsertUser(db, base);
+    expect(u.jarSort).toBe("newest");
+    setJarSort(db, u.id, "owed");
+    expect(findUserById(db, u.id)?.jarSort).toBe("owed");
+    expect(upsertUser(db, { ...base, name: "Ada L." }).jarSort).toBe("owed");
+  });
+  it("rejects unknown orders at the database", () => {
+    const u = upsertUser(db, base);
+    expect(() => db.prepare("UPDATE users SET jar_sort = 'random' WHERE id = ?").run(u.id)).toThrow(/CHECK/);
   });
 });
 

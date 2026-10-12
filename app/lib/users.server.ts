@@ -1,5 +1,6 @@
 import { nowIso, type Db } from "./db.server";
 import { newId } from "./ids.server";
+import type { JarSort } from "./jar-sort";
 
 export type Provider = "google" | "github";
 
@@ -10,6 +11,8 @@ export interface User {
   email: string | null;
   name: string;
   avatarUrl: string | null;
+  /** How the dashboard orders this user's jars. */
+  jarSort: JarSort;
   createdAt: string;
 }
 
@@ -28,6 +31,7 @@ interface UserRow {
   email: string | null;
   name: string;
   avatar_url: string | null;
+  jar_sort: JarSort;
   created_at: string;
 }
 
@@ -39,6 +43,7 @@ function rowToUser(row: UserRow): User {
     email: row.email,
     name: row.name,
     avatarUrl: row.avatar_url,
+    jarSort: row.jar_sort,
     createdAt: row.created_at,
   };
 }
@@ -62,6 +67,10 @@ export function upsertUser(db: Db, input: UpsertUserInput): User {
 export function findUserById(db: Db, id: string): User | null {
   const row = db.prepare<[string], UserRow>("SELECT * FROM users WHERE id = ?").get(id);
   return row ? rowToUser(row) : null;
+}
+
+export function setJarSort(db: Db, id: string, sort: JarSort): void {
+  db.prepare("UPDATE users SET jar_sort = ? WHERE id = ?").run(sort, id);
 }
 
 /** Deletes the account; jars, fines and settlements go with it through the foreign keys. */
